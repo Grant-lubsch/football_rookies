@@ -58,6 +58,23 @@ app.delete("/api/delete/:playerName", (req, res) => {
   });
 });
 
+app.put("/api/update/:playerName", (req, res) => {
+  const name = req.params.playerName;
+  const { playerAge, playerCollege, playerPosition, playerGrade, playerNotes } =
+    req.body;
+  const sqlUpdate =
+    "UPDATE football_rookies SET playerAge = ?, playerCollege = ?, playerPosition = ?, playerGrade = ?, playerNotes = ? WHERE playerName = ?";
+
+  db.query(
+    sqlUpdate,
+    [playerAge, playerCollege, playerPosition, playerGrade, playerNotes, name],
+    (err, result) => {
+      if (err) console.log(err);
+      res.send("player successfully updated");
+    }
+  );
+});
+
 app.listen(3004, () => {
   console.log("running on port 3004");
 });
