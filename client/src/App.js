@@ -9,6 +9,13 @@ function App() {
   const [playerPosition, setPlayerPosition] = useState("");
   const [playerGrade, setPlayerGrade] = useState("");
   const [playerNotes, setPlayerNotes] = useState("");
+  const [playerList, setPlayerList] = useState([]);
+
+  useEffect(() => {
+    Axios.get("http://localhost:3004/api/get").then((response) => {
+      setPlayerList(response.data);
+    });
+  }, []);
 
   const submitPlayer = () => {
     Axios.post("http://localhost:3004/api/insert", {
@@ -18,9 +25,27 @@ function App() {
       playerPosition: playerPosition,
       playerGrade: playerGrade,
       playerNotes: playerNotes,
-    }).then(() => {
-      alert("succesfully inserted");
     });
+
+    setPlayerList([
+      ...playerList,
+      {
+        playerName: playerName,
+        playerAge: playerAge,
+        playerCollege: playerCollege,
+        playerPosition: playerPosition,
+        playerGrade: playerGrade,
+        playerNotes: playerNotes,
+      },
+    ]);
+  };
+
+  const deletePlayer = (name) => {
+    Axios.delete(`http://localhost:3004/api/delete/${name}`).then(
+      (response) => {
+        setPlayerList(playerList.filter((val) => val.playerName !== name));
+      }
+    );
   };
 
   return (
@@ -76,7 +101,29 @@ function App() {
           }}
         />
 
-        <button onClick={submitPlayer}>Submit</button>
+        <button onClick={submitPlayer}>Submit Player</button>
+
+        {playerList.map((val) => {
+          return (
+            <div className="card">
+              <h1>{val.playerName}</h1>
+              <p>Age: {val.playerAge}</p>
+              <p>College: {val.playerCollege}</p>
+              <p>Position: {val.playerPosition}</p>
+              <p>Grade: {val.playerGrade}</p>
+              <p>Notes: {val.playerNotes}</p>
+
+              <button
+                onClick={() => {
+                  deletePlayer(val.playerName);
+                }}
+              >
+                Delete
+              </button>
+              <button>Edit</button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

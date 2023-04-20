@@ -15,6 +15,13 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.get("/api/get", (req, res) => {
+  const sqlSelect = "SELECT * FROM football_rookies";
+  db.query(sqlSelect, (err, result) => {
+    res.send(result);
+  });
+});
+
 app.post("/api/insert", (req, res) => {
   const playerName = req.body.playerName;
   const playerAge = req.body.playerAge;
@@ -36,9 +43,19 @@ app.post("/api/insert", (req, res) => {
       playerNotes,
     ],
     (err, result) => {
-      console.log(err);
+      console.log(result);
     }
   );
+});
+
+app.delete("/api/delete/:playerName", (req, res) => {
+  const name = req.params.playerName;
+  const sqlDelete = "DELETE FROM football_rookies WHERE playerName = ?";
+
+  db.query(sqlDelete, name, (err, result) => {
+    if (err) console.log(err);
+    res.send("player successfully deleted");
+  });
 });
 
 app.listen(3004, () => {
