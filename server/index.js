@@ -43,7 +43,7 @@ app.post("/api/insert", (req, res) => {
       playerNotes,
     ],
     (err, result) => {
-      console.log(result);
+      console.log(err);
     }
   );
 });

@@ -102,28 +102,41 @@ function App() {
         />
 
         <button onClick={submitPlayer}>Submit Player</button>
-
-        {playerList.map((val) => {
-          return (
-            <div className="card">
-              <h1>{val.playerName}</h1>
-              <p>Age: {val.playerAge}</p>
-              <p>College: {val.playerCollege}</p>
-              <p>Position: {val.playerPosition}</p>
-              <p>Grade: {val.playerGrade}</p>
-              <p>Notes: {val.playerNotes}</p>
-
-              <button
-                onClick={() => {
-                  deletePlayer(val.playerName);
-                }}
-              >
-                Delete
-              </button>
-              <button>Edit</button>
-            </div>
-          );
-        })}
+        <br />
+        <table border="1">
+          <thead>
+            <tr>
+              <td>Name</td>
+              <td>Age</td>
+              <td>College</td>
+              <td>Position</td>
+              <td>Grade</td>
+              <td>Notes</td>
+              <td>Actions</td>
+            </tr>
+          </thead>
+          <tbody>
+            {playerList.map((val) => {
+              return (
+                <tr key={val.id}>
+                  <td>{val.playerName}</td>
+                  <td>{val.playerAge}</td>
+                  <td>{val.playerCollege}</td>
+                  <td>{val.playerPosition}</td>
+                  <td>{val.playerGrade}</td>
+                  <td>{val.playerNotes}</td>
+                  <td>
+                    <button>Edit</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button onClick={() => deletePlayer(val.playerName)}>
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );
