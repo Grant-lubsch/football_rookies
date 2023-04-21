@@ -10,6 +10,7 @@ function App() {
   const [playerGrade, setPlayerGrade] = useState("");
   const [playerNotes, setPlayerNotes] = useState("");
   const [playerList, setPlayerList] = useState([]);
+  const [newGrade, setNewGrade] = useState("");
 
   useEffect(() => {
     Axios.get("http://localhost:3004/api/get").then((response) => {
@@ -48,6 +49,43 @@ function App() {
     );
   };
 
+  const updatePlayer = (player) => {
+    Axios.put("http://localhost:3004/api/update", {
+      playerName: player.playerName,
+      playerGrade: newGrade,
+    })
+      .then((response) => {
+        setPlayerList(
+          playerList.map((val) => {
+            return val.playerName === player.playerName
+              ? {
+                  id: val.id,
+                  playerName: val.playerName,
+                  playerAge: val.playerAge,
+                  playerCollege: val.playerCollege,
+                  playerPosition: val.playerPosition,
+                  playerGrade: newGrade,
+                  playerNotes: val.playerNotes,
+                }
+              : val;
+          })
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    setNewGrade("");
+  };
+
+  /*  const updatePlayer = (player) => {
+    Axios.put("http://localhost:3004/api/update", {
+      playerName: player.playerName,
+      playerGrade: newGrade,
+    });
+
+    setNewGrade("");
+  };
+*/
   return (
     <div className="App">
       <h1>Dynasty Rookie Rankings</h1>
@@ -112,7 +150,8 @@ function App() {
               <td>Position</td>
               <td>Grade</td>
               <td>Notes</td>
-              <td>Actions</td>
+              <td>Delete Player</td>
+              <td>Edit Grade</td>
             </tr>
           </thead>
           <tbody>
@@ -126,10 +165,24 @@ function App() {
                   <td>{val.playerGrade}</td>
                   <td>{val.playerNotes}</td>
                   <td>
-                    <button>Edit</button>
-                    &nbsp;&nbsp;&nbsp;
                     <button onClick={() => deletePlayer(val.playerName)}>
                       Delete
+                    </button>
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      id="updateInput"
+                      onChange={(e) => {
+                        setNewGrade(e.target.value);
+                      }}
+                    />
+                    <button
+                      onClick={() => {
+                        updatePlayer(val.playerName);
+                      }}
+                    >
+                      Edit
                     </button>
                   </td>
                 </tr>

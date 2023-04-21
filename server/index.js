@@ -58,21 +58,16 @@ app.delete("/api/delete/:playerName", (req, res) => {
   });
 });
 
-app.put("/api/update/:playerName", (req, res) => {
-  const name = req.params.playerName;
-  const { playerAge, playerCollege, playerPosition, playerGrade, playerNotes } =
-    req.body;
+app.put("/api/update", (req, res) => {
+  const playerName = req.body.playerName;
+  const playerGrade = req.body.playerGrade;
   const sqlUpdate =
-    "UPDATE football_rookies SET playerAge = ?, playerCollege = ?, playerPosition = ?, playerGrade = ?, playerNotes = ? WHERE playerName = ?";
+    "UPDATE football_rookies SET playerGrade = ? where playerName = ?";
 
-  db.query(
-    sqlUpdate,
-    [playerAge, playerCollege, playerPosition, playerGrade, playerNotes, name],
-    (err, result) => {
-      if (err) console.log(err);
-      res.send("player successfully updated");
-    }
-  );
+  db.query(sqlUpdate, [playerGrade, playerName], (err, result) => {
+    if (err) console.log(err);
+    res.send("player successfully updated");
+  });
 });
 
 app.listen(3004, () => {
