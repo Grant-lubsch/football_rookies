@@ -10,7 +10,7 @@ function App() {
   const [playerGrade, setPlayerGrade] = useState("");
   const [playerNotes, setPlayerNotes] = useState("");
   const [playerList, setPlayerList] = useState([]);
-  const [newGrade, setNewGrade] = useState("");
+  const [updatedGrades, setUpdatedGrades] = useState({});
 
   useEffect(() => {
     Axios.get("http://localhost:3004/api/get").then((response) => {
@@ -39,6 +39,13 @@ function App() {
         playerNotes: playerNotes,
       },
     ]);
+
+    setPlayerName("");
+    setPlayerAge("");
+    setPlayerCollege("");
+    setPlayerPosition("");
+    setPlayerGrade("");
+    setPlayerNotes("");
   };
 
   const deletePlayer = (name) => {
@@ -52,7 +59,7 @@ function App() {
   const updatePlayer = (player) => {
     Axios.put("http://localhost:3004/api/update", {
       playerName: player.playerName,
-      playerGrade: newGrade,
+      playerGrade: updatedGrades[player.playerName],
     })
       .then((response) => {
         setPlayerList(
@@ -64,17 +71,20 @@ function App() {
                   playerAge: val.playerAge,
                   playerCollege: val.playerCollege,
                   playerPosition: val.playerPosition,
-                  playerGrade: newGrade,
+                  playerGrade: updatedGrades[player.playerName],
                   playerNotes: val.playerNotes,
                 }
               : val;
           })
         );
+        setUpdatedGrades({
+          ...updatedGrades,
+          [player.playerName]: "",
+        });
       })
       .catch((error) => {
         console.error(error);
       });
-    setNewGrade("");
   };
 
   /*  const updatePlayer = (player) => {
@@ -173,17 +183,16 @@ function App() {
                     <input
                       type="text"
                       id="updateInput"
-                      onChange={(e) => {
-                        setNewGrade(e.target.value);
-                      }}
+                      value={updatedGrades[val.playerName] || ""}
+                      onChange={(e) =>
+                        setUpdatedGrades({
+                          ...updatedGrades,
+                          [val.playerName]: e.target.value,
+                        })
+                      }
                     />
-                    <button
-                      onClick={() => {
-                        updatePlayer(val.playerName);
-                      }}
-                    >
-                      Edit
-                    </button>
+
+                    <button onClick={() => updatePlayer(val)}>Edit</button>
                   </td>
                 </tr>
               );
