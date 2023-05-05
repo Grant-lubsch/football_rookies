@@ -23,51 +23,54 @@ app.get("/api/get", (req, res) => {
 });
 
 app.post("/api/insert", (req, res) => {
-  const playerName = req.body.playerName;
-  const playerAge = req.body.playerAge;
-  const playerCollege = req.body.playerCollege;
-  const playerPosition = req.body.playerPosition;
-  const playerGrade = req.body.playerGrade;
-  const playerNotes = req.body.playerNotes;
+  const name = req.body.name;
+  const age = req.body.age;
+  const college = req.body.college;
+  const position = req.body.position;
+  const grade = req.body.grade;
+  const notes = req.body.notes;
 
   const sqlInsert =
     "INSERT INTO football_rookies (playerName, playerAge, playerCollege, playerPosition, playerGrade, playerNotes) VALUES (?, ?, ?, ?, ?, ?)";
   db.query(
     sqlInsert,
-    [
-      playerName,
-      playerAge,
-      playerCollege,
-      playerPosition,
-      playerGrade,
-      playerNotes,
-    ],
+    [name, age, college, position, grade, notes],
     (err, result) => {
       console.log(err);
+      res.send("Player added successfully");
     }
   );
 });
 
-app.delete("/api/delete/:playerName", (req, res) => {
-  const name = req.params.playerName;
-  const sqlDelete = "DELETE FROM football_rookies WHERE playerName = ?";
+app.delete("/api/delete/:id", (req, res) => {
+  const id = req.params.id;
+  const sqlDelete = "DELETE FROM football_rookies WHERE id = ?";
 
-  db.query(sqlDelete, name, (err, result) => {
-    if (err) console.log(err);
+  db.query(sqlDelete, id, (err, result) => {
+    console.log(result);
     res.send("player successfully deleted");
   });
 });
 
-app.put("/api/update", (req, res) => {
-  const playerName = req.body.playerName;
-  const playerGrade = req.body.playerGrade;
+app.put("/api/update/:id", (req, res) => {
+  const id = req.params.id;
+  const name = req.body.name;
+  const age = req.body.age;
+  const college = req.body.college;
+  const position = req.body.position;
+  const grade = req.body.grade;
+  const notes = req.body.notes;
   const sqlUpdate =
-    "UPDATE football_rookies SET playerGrade = ? where playerName = ?";
+    "UPDATE football_rookies SET playerName=?, playerAge=?, playerCollege=?, playerPosition=?, playerGrade=?, playerNotes=? WHERE id = ?";
 
-  db.query(sqlUpdate, [playerGrade, playerName], (err, result) => {
-    if (err) console.log(err);
-    res.send("player successfully updated");
-  });
+  db.query(
+    sqlUpdate,
+    [name, age, college, position, grade, notes, id],
+    (err, result) => {
+      if (err) console.log(err);
+      res.send("player successfully updated");
+    }
+  );
 });
 
 app.listen(3004, () => {

@@ -3,14 +3,15 @@ import "./App.css";
 import Axios from "axios";
 
 function App() {
-  const [playerName, setPlayerName] = useState("");
-  const [playerAge, setPlayerAge] = useState("");
-  const [playerCollege, setPlayerCollege] = useState("");
-  const [playerPosition, setPlayerPosition] = useState("");
-  const [playerGrade, setPlayerGrade] = useState("");
-  const [playerNotes, setPlayerNotes] = useState("");
+  const [name, setName] = useState("");
+  const [age, setAge] = useState("");
+  const [college, setCollege] = useState("");
+  const [position, setPosition] = useState("");
+  const [grade, setGrade] = useState("");
+  const [notes, setNotes] = useState("");
   const [playerList, setPlayerList] = useState([]);
-  const [updatedGrades, setUpdatedGrades] = useState({});
+  const [editing, setEditing] = useState(false);
+  const [editId, setEditId] = useState(null);
 
   useEffect(() => {
     Axios.get("http://localhost:3004/api/get").then((response) => {
@@ -20,82 +21,76 @@ function App() {
 
   const submitPlayer = () => {
     Axios.post("http://localhost:3004/api/insert", {
-      playerName: playerName,
-      playerAge: playerAge,
-      playerCollege: playerCollege,
-      playerPosition: playerPosition,
-      playerGrade: playerGrade,
-      playerNotes: playerNotes,
+      name: name,
+      age: age,
+      college: college,
+      position: position,
+      grade: grade,
+      notes: notes,
+    }).then(() => {
+      setPlayerList([
+        ...playerList,
+        {
+          playerName: name,
+          playerAge: age,
+          playerCollege: college,
+          playerPosition: position,
+          playerGrade: grade,
+          playerNotes: notes,
+        },
+      ]);
+      setName("");
+      setAge("");
+      setCollege("");
+      setPosition("");
+      setGrade("");
+      setNotes("");
     });
-
-    setPlayerList([
-      ...playerList,
-      {
-        playerName: playerName,
-        playerAge: playerAge,
-        playerCollege: playerCollege,
-        playerPosition: playerPosition,
-        playerGrade: playerGrade,
-        playerNotes: playerNotes,
-      },
-    ]);
-
-    setPlayerName("");
-    setPlayerAge("");
-    setPlayerCollege("");
-    setPlayerPosition("");
-    setPlayerGrade("");
-    setPlayerNotes("");
   };
 
-  const deletePlayer = (name) => {
-    Axios.delete(`http://localhost:3004/api/delete/${name}`).then(
-      (response) => {
-        setPlayerList(playerList.filter((val) => val.playerName !== name));
-      }
-    );
+  const handleUpdate = (id) => {
+    setEditing(true);
+    setEditId(id);
+    const playerToUpdate = playerList.find((val) => val.id === id);
+    setName(playerToUpdate.playerName);
+    setAge(playerToUpdate.playerAge);
+    setCollege(playerToUpdate.playerCollege);
+    setPosition(playerToUpdate.playerPosition);
+    setGrade(playerToUpdate.playerGrade);
+    setNotes(playerToUpdate.playerNotes);
   };
 
-  const updatePlayer = (player) => {
-    Axios.put("http://localhost:3004/api/update", {
-      playerName: player.playerName,
-      playerGrade: updatedGrades[player.playerName],
-    })
-      .then((response) => {
-        setPlayerList(
-          playerList.map((val) => {
-            return val.playerName === player.playerName
-              ? {
-                  id: val.id,
-                  playerName: val.playerName,
-                  playerAge: val.playerAge,
-                  playerCollege: val.playerCollege,
-                  playerPosition: val.playerPosition,
-                  playerGrade: updatedGrades[player.playerName],
-                  playerNotes: val.playerNotes,
-                }
-              : val;
-          })
-        );
-        setUpdatedGrades({
-          ...updatedGrades,
-          [player.playerName]: "",
-        });
-      })
-      .catch((error) => {
-        console.error(error);
+  const handleUpdateSubmit = () => {
+    Axios.put(`http://localhost:3004/api/update/${editId}`, {
+      name: name,
+      age: age,
+      college: college,
+      position: position,
+      grade: grade,
+      notes: notes,
+    }).then(() => {
+      setName("");
+      setAge("");
+      setCollege("");
+      setPosition("");
+      setGrade("");
+      setNotes("");
+      setEditId(null);
+      setEditing(false);
+      Axios.get("http://localhost:3004/api/get").then((response) => {
+        setPlayerList(response.data);
       });
-  };
-
-  /*  const updatePlayer = (player) => {
-    Axios.put("http://localhost:3004/api/update", {
-      playerName: player.playerName,
-      playerGrade: newGrade,
     });
-
-    setNewGrade("");
   };
-*/
+
+  const handleDelete = (id) => {
+    Axios.delete(`http://localhost:3004/api/delete/${id}`).then(() => {
+      Axios.get("http://localhost:3004/api/get").then((response) => {
+        setPlayerList(response.data);
+      });
+    });
+  };
+
   return (
     <div className="App">
       <h1>Dynasty Rookie Rankings</h1>
@@ -104,52 +99,61 @@ function App() {
         <input
           type="text"
           name="playerName"
+          value={name}
           onChange={(e) => {
-            setPlayerName(e.target.value);
+            setName(e.target.value);
           }}
         />
         <label>Age:</label>
         <input
           type="text"
           name="playerAge"
+          value={age}
           onChange={(e) => {
-            setPlayerAge(e.target.value);
+            setAge(e.target.value);
           }}
         />
         <label>College:</label>
         <input
           type="text"
           name="playerCollege"
+          value={college}
           onChange={(e) => {
-            setPlayerCollege(e.target.value);
+            setCollege(e.target.value);
           }}
         />
         <label>Position:</label>
         <input
           type="text"
           name="playerPosition"
+          value={position}
           onChange={(e) => {
-            setPlayerPosition(e.target.value);
+            setPosition(e.target.value);
           }}
         />
         <label>Grade:</label>
         <input
           type="text"
           name="playerGrade"
+          value={grade}
           onChange={(e) => {
-            setPlayerGrade(e.target.value);
+            setGrade(e.target.value);
           }}
         />
         <label>Notes:</label>
         <input
           type="text"
           name="playerNotes"
+          value={notes}
           onChange={(e) => {
-            setPlayerNotes(e.target.value);
+            setNotes(e.target.value);
           }}
         />
-
-        <button onClick={submitPlayer}>Submit Player</button>
+        {editing ? (
+          <button onClick={handleUpdateSubmit}>Update Player</button>
+        ) : (
+          <button onClick={submitPlayer}>Submit</button>
+        )}
         <br />
         <table border="1">
           <thead>
@@ -161,7 +165,7 @@ function App() {
               <td>Grade</td>
               <td>Notes</td>
               <td>Delete Player</td>
-              <td>Edit Grade</td>
+              <td>Update Player</td>
             </tr>
           </thead>
           <tbody>
@@ -175,24 +179,10 @@ function App() {
                   <td>{val.playerGrade}</td>
                   <td>{val.playerNotes}</td>
                   <td>
-                    <button onClick={() => deletePlayer(val.playerName)}>
-                      Delete
-                    </button>
+                    <button onClick={() => handleDelete(val.id)}>Delete</button>
                   </td>
                   <td>
-                    <input
-                      type="text"
-                      id="updateInput"
-                      value={updatedGrades[val.playerName] || ""}
-                      onChange={(e) =>
-                        setUpdatedGrades({
-                          ...updatedGrades,
-                          [val.playerName]: e.target.value,
-                        })
-                      }
-                    />
-
-                    <button onClick={() => updatePlayer(val)}>Edit</button>
+                    <button onClick={() => handleUpdate(val.id)}>Edit</button>
                   </td>
                 </tr>
               );
