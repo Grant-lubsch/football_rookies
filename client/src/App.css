@@ -99,3 +99,43 @@ tr:hover {
     font-size: 16px;
   }
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.pagination li {
+  display: inline-block;
+  margin: 0 5px;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  text-align: center;
+}
+
+.pagination li.active {
+  color: #fff;
+}
+
+.pagination li.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination .prev,
+.pagination .next {
+  display: inline-block;
+  margin: 0 5px;
+  border: 1px solid #ccc;
+  padding: 5px 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.pagination .prev:hover,
+.pagination .next:hover {
+  color: #fff;
+  cursor: pointer;
+}
